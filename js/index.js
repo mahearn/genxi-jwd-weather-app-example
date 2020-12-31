@@ -1,9 +1,26 @@
 // Set appId
-const appId = 'SET APP ID HERE';
+const appId = 'f1846328d23eff5afc083165a99b413e';
 
 // getDataForCity function that fetches weather info from openweathermap api
-const getDataForCity = city => fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${appId}&units=metric`)
-  .then(response => response.json());
+const getDataForCity = (city) => fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${appId}&units=metric`)
+  .then(response => response.json())
+  .then(data => {
+      // get the data we need for our html from the response
+      const name = data.name;
+      const emoji = emojis[data.weather[0].icon];
+      const temp = Math.round(data.main.temp);
+      const feelsLike = Math.round(data.main.feels_like);
+      const description = data.weather[0].description;
+
+      // create the card html
+      const cardHtml = createCardHtml(name, emoji, temp, feelsLike, description);
+
+      // render!
+      weatherContainer.innerHTML = cardHtml;
+    })
+  .catch((error) => {
+    weatherContainer.innerHTML = `<em>Server returned error: "${error.message}".</em>`;
+  }); 
 
 // createCardHtml function used to render the weather info 
 const createCardHtml = (name, emoji, temp, feelsLike, description) => `
@@ -55,24 +72,24 @@ const cityInput = document.querySelector('#city-input');
 const weatherContainer = document.querySelector('#weather-container');
 
 // event listener for a click event on the "Go!" button
-goButton.addEventListener('click', () => {
+goButton.addEventListener('click', (e) => {
   // get the city from the input field
   const city = cityInput.value;
 
   // get the weather data for the city
-  getDataForCity(city)
-    .then(data => {
-      // get the data we need for our html from the response
-      const name = data.name;
-      const emoji = emojis[data.weather[0].icon];
-      const temp = data.main.temp;
-      const feelsLike = data.main.feels_like;
-      const description = data.weather[0].description;
+  getDataForCity(city);
+    // .then(data => {
+    //   // get the data we need for our html from the response
+    //   const name = data.name;
+    //   const emoji = emojis[data.weather[0].icon];
+    //   const temp = data.main.temp;
+    //   const feelsLike = data.main.feels_like;
+    //   const description = data.weather[0].description;
 
-      // create the card html
-      const cardHtml = createCardHtml(name, emoji, temp, feelsLike, description);
+    //   // create the card html
+    //   const cardHtml = createCardHtml(name, emoji, temp, feelsLike, description);
 
-      // render!
-      weatherContainer.innerHTML = cardHtml;
-    });
+    //   // render!
+    //   weatherContainer.innerHTML = cardHtml;
+    // });
 });
